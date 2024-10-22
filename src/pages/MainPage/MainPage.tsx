@@ -4,8 +4,8 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 
 export const MainPage = () =>{
     const [decodedText, setDecodedText] = useState<string | null>(null);
-    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
     const [isScanned, setIsScanned] = useState(false);
+    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   
     useEffect(() => {
       const config = {
@@ -17,10 +17,14 @@ export const MainPage = () =>{
   
       scannerRef.current.render(
         (decodedText) => {
-          setDecodedText(decodedText);
-          setIsScanned(true); // Устанавливаем флаг, что пользователь отмечен
-          playSound(); // Воспроизводим звук
-          setTimeout(() => setIsScanned(false), 2000); // Убираем эффект через 2 секунды
+          setDecodedText(decodedText); // Сохраняем закодированный текст
+          setIsScanned(true); // Показать сообщение об успешном сканировании
+          playSound(); // Воспроизвести звук
+  
+          // Очищаем и закрываем сканер
+          if (scannerRef.current) {
+            scannerRef.current.clear();
+          }
         },
         (error) => {
           console.warn(`Ошибка сканирования: ${error}`);
@@ -36,14 +40,21 @@ export const MainPage = () =>{
   
     // Функция для воспроизведения звука
     const playSound = () => {
-      const audio = new Audio('/sounds/confirmation.mp3'); // Звук для подтверждения
+      const audio = new Audio('/sounds/confirmation.mp3');
       audio.play();
     };
   
     return (
       <div className={styles.qrScannerContainer}>
-        <div id="qr-reader" className={`${styles.qrReader} ${isScanned ? styles.scanned : ''}`}></div>
-        {decodedText && <p className={styles.resultText}>Результат: {decodedText}</p>}
+        {!isScanned ? (
+          <div id="qr-reader" className={styles.qrReader}></div>
+        ) : (
+          <div className={styles.resultContainer}>
+            <h2 className={styles.successMessage}>Успешно просканировано!</h2>
+            <p className={styles.resultText}>Информация: {decodedText}</p>
+          </div>
+        )}
       </div>
     );
   };
+  
