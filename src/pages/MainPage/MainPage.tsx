@@ -10,17 +10,13 @@ export const MainPage = () =>{
     const qrCodeRegionId = "qr-reader"; // ID для div элемента
   
     useEffect(() => {
+      // Очищаем сканер при размонтировании компонента
       return () => {
-        // Очищаем сканер при размонтировании компонента
-        if (qrCodeScannerRef.current) {
-          qrCodeScannerRef.current.stop().then(() => {
-            qrCodeScannerRef.current?.clear();
-          });
-        }
+        stopScanner();
       };
     }, []);
   
-    // Запускаем камеру и сканирование
+    // Функция для запуска камеры и сканирования
     const startCamera = () => {
       if (isScanning) return;
   
@@ -37,23 +33,32 @@ export const MainPage = () =>{
         config,
         (decodedText) => {
           setDecodedText(decodedText);
-          setIsScanned(true);
-          triggerVibration();
+          setIsScanned(true); // Отображаем сообщение об успешном сканировании
+          triggerVibration(); // Запускаем вибрацию
   
-          // Останавливаем сканер после успешного сканирования
-          qrCodeScannerRef.current?.stop().then(() => {
-            qrCodeScannerRef.current?.clear();
-            setIsScanning(false);
-          });
+          stopScanner(); // Останавливаем сканер
         },
         (errorMessage) => {
           console.warn("Ошибка сканирования:", errorMessage);
         }
       ).then(() => {
-        setIsScanning(true);
+        setIsScanning(true); // Устанавливаем флаг, что сканирование запущено
       }).catch((error) => {
         console.error("Не удалось запустить камеру:", error);
       });
+    };
+  
+    // Функция для остановки и очистки сканера
+    const stopScanner = () => {
+      if (qrCodeScannerRef.current) {
+        qrCodeScannerRef.current.stop().then(() => {
+          qrCodeScannerRef.current?.clear();
+          setIsScanning(false); // Сбрасываем флаг сканирования
+          qrCodeScannerRef.current = null; // Обнуляем реф, чтобы пересоздать сканер
+        }).catch((error) => {
+          console.error("Ошибка при остановке сканера:", error);
+        });
+      }
     };
   
     // Функция для запуска вибрации
@@ -63,15 +68,22 @@ export const MainPage = () =>{
       }
     };
   
+    // Функция для повторного запуска сканера после успешного сканирования
+    const handleRestart = () => {
+      setDecodedText(null); // Сбрасываем информацию
+      setIsScanned(false);  // Скрываем сообщение
+      startCamera();        // Перезапускаем сканирование
+    };
+  
     return (
       <div className={styles.qrScannerContainer}>
         {/* Кнопка для открытия камеры */}
         <button 
           className={styles.startButton} 
-          onClick={startCamera} 
+          onClick={isScanned ? handleRestart : startCamera} 
           disabled={isScanning}
         >
-          Открыть камеру
+          {isScanned ? 'Сканировать снова' : 'Открыть камеру'}
         </button>
   
         {/* Область для отображения камеры */}
