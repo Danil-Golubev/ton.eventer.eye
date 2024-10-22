@@ -1,16 +1,21 @@
 .qrScannerContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  .qrReader {
-    width: 100%;
-    max-width: 500px;
-  }
-  
-  .resultText {
-    font-size: 18px;
-    color: green;
-  }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.qrReader {
+  width: 100%;
+  max-width: 500px;
+  transition: box-shadow 0.3s ease;
+}
+
+.scanned {
+  box-shadow: 0 0 15px 5px green; /* Подсветка зеленым цветом при успешном сканировании */
+}
+
+.resultText {
+  font-size: 18px;
+  color: green;
+}
