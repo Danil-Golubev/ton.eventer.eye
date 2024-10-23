@@ -76,6 +76,7 @@ export const MainPage = () =>{
     };
   
     return (
+<div className={styles.main}>
       <div className={styles.qrScannerContainer}>
         {/* Кнопка для открытия камеры */}
         <button 
@@ -96,6 +97,7 @@ export const MainPage = () =>{
             <p className={styles.resultText}>Информация: {decodedText}</p>
           </div>
         )}
+      </div>
       </div>
     );
   };
