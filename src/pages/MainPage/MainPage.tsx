@@ -94,7 +94,7 @@ export const MainPage = () =>{
         {isScanned && (
           <div className={styles.resultContainer}>
             <h2 className={styles.successMessage}>Успешно просканировано!</h2>
-            <p className={styles.resultText}>Информация: {decodedText}</p>
+            <p className={styles.resultText}>Usename: {decodedText}</p>
           </div>
         )}
       </div>
